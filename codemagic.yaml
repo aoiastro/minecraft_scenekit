@@ -1,1 +1,3 @@
-
+workflows:
+  minecraft-scenekit:
+    name: minecraft scenekit workflow
