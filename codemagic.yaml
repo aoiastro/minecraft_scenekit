@@ -10,12 +10,13 @@ workflows:
       - name: Build IPA
         script: |
           xcodebuild -scheme MySceneKitApp \
-            -sdk iphoneos \
-            -configuration Release \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
-            build
+          -sdk iphoneos \
+          -configuration Release \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO \
+          build
+
           mkdir -p build/ipa
           xcrun -sdk iphoneos PackageApplication \
             -v build/Release-iphoneos/MySceneKitApp.app \
