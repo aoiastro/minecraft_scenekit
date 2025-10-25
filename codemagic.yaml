@@ -1,25 +1,31 @@
 workflows:
-  ios-ipa:
-    name: iOS IPA Build
+  ios-free:
+    name: iOS Build Free Apple ID
     environment:
       xcode: 15.0
-      ios_signing:
-        distribution_type: ad_hoc
-        bundle_identifier: com.astro.mine_scenekit
+      os: macos
+      flutter: none
+      cocoapods: default
     scripts:
-      - name: Build IPA
+      - name: Build SwiftUI + SceneKit app
         script: |
-          xcodebuild -scheme MySceneKitApp \
-          -sdk iphoneos \
-          -configuration Release \
-          CODE_SIGN_IDENTITY="" \
-          CODE_SIGNING_REQUIRED=NO \
-          CODE_SIGNING_ALLOWED=NO \
-          build
-
+          # ビルド用ディレクトリ作成
+          mkdir -p build
+          
+          # Xcodebuildで署名スキップ
+          xcodebuild -scheme minecraft_swiftUI \
+            -sdk iphoneos \
+            -configuration Release \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build \
+            -derivedDataPath build
+          
+          # IPA生成
           mkdir -p build/ipa
           xcrun -sdk iphoneos PackageApplication \
-            -v build/Release-iphoneos/MySceneKitApp.app \
+            -v build/Build/Products/Release-iphoneos/MySceneKitApp.app \
             -o $PWD/build/ipa/MySceneKitApp.ipa
     artifacts:
-      - build/ipa/game.ipa
+      - build/ipa/MySceneKitApp.ipa
