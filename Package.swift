@@ -3,7 +3,7 @@ import PackageDescription
 let package = Package(
     name: "minecraft_swiftUI",
     platforms: [
-        .iOS(.v18)
+        .iOS(.v17)
     ],
     products: [
         .executable(
