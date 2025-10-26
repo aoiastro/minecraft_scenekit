@@ -20,9 +20,7 @@ let package = Package(
             name: "minecraft_swiftUI",
             dependencies: [],
             path: "Sources",
-            resources: [
-                .process("Info.plist")
-            ]
+            resources: []
         )
     ]
 )
