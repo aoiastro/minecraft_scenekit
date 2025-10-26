@@ -20,7 +20,7 @@ workflows:
             CODE_SIGNING_ALLOWED=NO
 
           # IPAを生成
-          xcodebuild -exportArchive \
+          swift build -c release -Xswift -target \
             -archivePath build/minecraft_swiftUI.xcarchive \
             -exportOptionsPlist exportOptions.plist \
             -exportPath build/ipa
