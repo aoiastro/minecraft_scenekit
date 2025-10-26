@@ -10,14 +10,15 @@ workflows:
           mkdir -p build
 
           # Archiveを作成
-          xcodebuild archive \
-            xcodebuild -scheme minecraft_scenekit \
+          xcodebuild \
+            -scheme minecraft_scenekit \
             -sdk iphoneos \
             -configuration Release \
             -archivePath build/minecraft_swiftUI.xcarchive \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
+            clean archive
 
           # IPAを生成
           swift build -c release -Xswift -target \
