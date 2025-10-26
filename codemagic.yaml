@@ -5,25 +5,41 @@ workflows:
       xcode: 15.0
       cocoapods: default
     scripts:
-  - name: Build SwiftUI + SceneKit app
-    script: |
-      mkdir -p build
+      - name: Build SwiftUI + SceneKit app
+        script: |
+          mkdir -p build
 
-      # Archiveを作成
-      xcodebuild archive \
-        -scheme minecraft_swiftUI \
-        -sdk iphoneos \
-        -configuration Release \
-        -archivePath build/minecraft_swiftUI.xcarchive \
-        CODE_SIGN_IDENTITY="" \
-        CODE_SIGNING_REQUIRED=NO \
-        CODE_SIGNING_ALLOWED=NO
+          # Archiveを作成
+          xcodebuild archive \
+            -scheme minecraft_swiftUI \
+            -sdk iphoneos \
+            -configuration Release \
+            -archivePath build/minecraft_swiftUI.xcarchive \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
 
-      # IPAを作成
-      xcodebuild -exportArchive \
-        -archivePath build/minecraft_swiftUI.xcarchive \
-        -exportOptionsPlist exportOptions.plist \
-        -exportPath build/ipa
+          # IPAを作成するための exportOptions.plist を生成
+          cat <<EOT > exportOptions.plist
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" 
+"http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>method</key>
+    <string>development</string>
+    <key>signingStyle</key>
+    <string>manual</string>
+    <key>compileBitcode</key>
+    <false/>
+</dict>
+</plist>
+EOT
 
+          # IPAを生成
+          xcodebuild -exportArchive \
+            -archivePath build/minecraft_swiftUI.xcarchive \
+            -exportOptionsPlist exportOptions.plist \
+            -exportPath build/ipa
     artifacts:
-      - build/ipa/MySceneKitApp.ipa
+      - build/ipa/*.ipa
