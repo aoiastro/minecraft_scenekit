@@ -1,6 +1,6 @@
 workflows:
-  ios-swiftpm:
-    name: Build SwiftPM iOS SceneKit App
+  ios-swiftpm-xcodeproj:
+    name: Build SwiftPM iOS App (Temp XcodeProj)
     environment:
       xcode: 15.0
       vars:
@@ -9,16 +9,28 @@ workflows:
     scripts:
       - name: Clean previous build
         script: |
-          rm -rf .build build DerivedData
+          echo "🧹 Cleaning previous build..."
+          rm -rf .build build DerivedData *.xcodeproj
+          echo "✅ Clean complete."
 
-      - name: Build using SwiftPM
+      - name: Resolve Swift Package dependencies
         script: |
-          swift package clean
-          swift build -c release
+          echo "📦 Resolving Swift Package dependencies..."
+          swift package update
+          swift package resolve
+          echo "✅ Dependencies resolved."
 
-      - name: Archive app
+      - name: Generate temporary Xcode project
         script: |
-          xcodebuild archive \
+          echo "🛠️ Generating temporary Xcode project from SwiftPM..."
+          swift package generate-xcodeproj
+          echo "✅ Xcode project generated."
+
+      - name: Archive iOS app (no code signing)
+        script: |
+          echo "🚀 Archiving iOS app..."
+          xcodebuild \
+            -project "${APP_NAME}.xcodeproj" \
             -scheme "${APP_NAME}" \
             -configuration Release \
             -sdk iphoneos \
@@ -26,10 +38,11 @@ workflows:
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            -skipPackagePluginValidation
+            clean archive
 
       - name: Export IPA
         script: |
+          echo "📦 Exporting IPA..."
           mkdir -p build/ipa
           cat > ExportOptions.plist <<EOF
           {
