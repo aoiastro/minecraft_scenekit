@@ -18,7 +18,7 @@ let package = Package(
         .executableTarget(
             name: "minecraft_swiftUI",
             dependencies: [],
-            resources: [.copy("Resources")]
+            path: "Sources"
         )
     ]
 )
