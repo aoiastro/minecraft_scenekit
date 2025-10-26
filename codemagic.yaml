@@ -1,51 +1,35 @@
 workflows:
   ios-swiftpm:
-    name: iOS SwiftPM SceneKit Build
+    name: Build SwiftPM iOS SceneKit App
     environment:
       xcode: 15.0
-      cocoapods: default
-      node: latest
       vars:
-        APP_NAME: "minecraft_scenekit"
+        APP_NAME: "minecraft_swiftUI"
 
     scripts:
       - name: Clean previous build
         script: |
-          echo "🧹 Cleaning..."
           rm -rf .build build DerivedData
-          echo "✅ Clean complete."
 
-      - name: Resolve Swift dependencies
+      - name: Build using SwiftPM
         script: |
-          echo "📦 Resolving Swift Package dependencies..."
           swift package clean
-          swift package update
-          swift package resolve
-          echo "✅ Dependencies resolved."
-
-      - name: Build iOS app using SwiftPM
-        script: |
-          echo "🏗️ Building SwiftPM app for iOS..."
           swift build -c release
-          echo "✅ Build complete."
 
-      - name: Archive app with xcodebuild (no .xcodeproj)
+      - name: Archive app
         script: |
-          echo "📦 Archiving iOS app..."
-          xcodebuild \
+          xcodebuild archive \
             -scheme "${APP_NAME}" \
             -configuration Release \
             -sdk iphoneos \
             -archivePath "build/${APP_NAME}.xcarchive" \
-            -skipPackagePluginValidation \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            clean archive
+            -skipPackagePluginValidation
 
       - name: Export IPA
         script: |
-          echo "📦 Exporting IPA..."
           mkdir -p build/ipa
           cat > ExportOptions.plist <<EOF
           {
@@ -54,7 +38,6 @@ workflows:
             "destination": "export",
             "signingStyle": "manual",
             "stripSwiftSymbols": true,
-            "teamID": "",
             "thinning": "<none>"
           }
           EOF
@@ -69,8 +52,3 @@ workflows:
     artifacts:
       - build/ipa/*.ipa
       - build/**/*.xcarchive
-
-    publishing:
-      email:
-        recipients:
-          - your-email@example.com
