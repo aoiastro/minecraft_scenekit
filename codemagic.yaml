@@ -1,29 +1,76 @@
 workflows:
-  ios-free:
-    name: iOS Build Free Apple ID
+  ios-swiftpm:
+    name: iOS SwiftPM SceneKit Build
     environment:
       xcode: 15.0
       cocoapods: default
-    scripts:
-      - name: Build SwiftUI + SceneKit app
-        script: |
-          mkdir -p build
+      node: latest
+      vars:
+        APP_NAME: "minecraft_scenekit"
 
-          # Archiveを作成
+    scripts:
+      - name: Clean previous build
+        script: |
+          echo "🧹 Cleaning..."
+          rm -rf .build build DerivedData
+          echo "✅ Clean complete."
+
+      - name: Resolve Swift dependencies
+        script: |
+          echo "📦 Resolving Swift Package dependencies..."
+          swift package clean
+          swift package update
+          swift package resolve
+          echo "✅ Dependencies resolved."
+
+      - name: Build iOS app using SwiftPM
+        script: |
+          echo "🏗️ Building SwiftPM app for iOS..."
+          swift build -c release
+          echo "✅ Build complete."
+
+      - name: Archive app with xcodebuild (no .xcodeproj)
+        script: |
+          echo "📦 Archiving iOS app..."
           xcodebuild \
-            -scheme minecraft_scenekit \
-            -sdk iphoneos \
+            -scheme "${APP_NAME}" \
             -configuration Release \
-            -archivePath build/minecraft_swiftUI.xcarchive \
+            -sdk iphoneos \
+            -archivePath "build/${APP_NAME}.xcarchive" \
+            -skipPackagePluginValidation \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            clean archive
+
+      - name: Export IPA
+        script: |
+          echo "📦 Exporting IPA..."
+          mkdir -p build/ipa
+          cat > ExportOptions.plist <<EOF
+          {
+            "method": "ad-hoc",
+            "compileBitcode": false,
+            "destination": "export",
+            "signingStyle": "manual",
+            "stripSwiftSymbols": true,
+            "teamID": "",
+            "thinning": "<none>"
+          }
+          EOF
+          xcodebuild -exportArchive \
+            -archivePath "build/${APP_NAME}.xcarchive" \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath "build/ipa" \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
-            clean archive
 
-          # IPAを生成
-          swift build -c release -Xswift -target \
-            -archivePath build/minecraft_swiftUI.xcarchive \
-            -exportOptionsPlist exportOptions.plist \
-            -exportPath build/ipa
     artifacts:
-      - build/ipa/app.ipa
+      - build/ipa/*.ipa
+      - build/**/*.xcarchive
+
+    publishing:
+      email:
+        recipients:
+          - your-email@example.com
