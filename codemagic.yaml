@@ -11,7 +11,7 @@ workflows:
 
           # Archiveを作成
           xcodebuild archive \
-            -scheme minecraft_swiftUI \
+            -scheme -scheme minecraft_swiftUI \
             -sdk iphoneos \
             -configuration Release \
             -archivePath build/minecraft_swiftUI.xcarchive \
