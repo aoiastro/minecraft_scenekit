@@ -19,7 +19,10 @@ let package = Package(
         .executableTarget(
             name: "minecraft_swiftUI",
             dependencies: [],
-            path: "Sources"
+            path: "Sources",
+            resources: [
+                .process("Info.plist")
+            ]
         )
     ]
 )
