@@ -11,7 +11,7 @@ workflows:
 
           # Archiveを作成
           xcodebuild archive \
-            -scheme -scheme minecraft_swiftUI \
+            xcodebuild -scheme minecraft_scenekit \
             -sdk iphoneos \
             -configuration Release \
             -archivePath build/minecraft_swiftUI.xcarchive \
@@ -20,7 +20,7 @@ workflows:
             CODE_SIGNING_ALLOWED=NO
 
           # IPAを生成
-          swift build -c release -Xswiftc -target \
+          xcodebuild -exportArchive \
             -archivePath build/minecraft_swiftUI.xcarchive \
             -exportOptionsPlist exportOptions.plist \
             -exportPath build/ipa
