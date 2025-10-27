@@ -1,67 +1,30 @@
 workflows:
-  ios-swiftpm-xcodeproj:
-    name: Build SwiftPM iOS App (Temp XcodeProj)
+  build_ios_swiftui:
+    name: Build iOS SwiftUI app
     environment:
-      xcode: 15.0
-      vars:
-        APP_NAME: "minecraft_swiftUI"
-
+      xcode: latest
+      cocoapods: default
+      flutter: none
     scripts:
-      - name: Clean previous build
+      - name: Install XcodeGen
+        script: brew install xcodegen
+      - name: Generate Xcode project
+        script: xcodegen generate --spec project.yml
+      - name: Build & Archive
         script: |
-          echo "🧹 Cleaning previous build..."
-          rm -rf .build build DerivedData *.xcodeproj
-          echo "✅ Clean complete."
-
-      - name: Resolve Swift Package dependencies
-        script: |
-          echo "📦 Resolving Swift Package dependencies..."
-          swift package update
-          swift package resolve
-          echo "✅ Dependencies resolved."
-
-      - name: Generate temporary Xcode project
-        script: |
-          echo "🛠️ Generating temporary Xcode project from SwiftPM..."
-          swift package generate-xcodeproj
-          echo "✅ Xcode project generated."
-
-      - name: Archive iOS app (no code signing)
-        script: |
-          echo "🚀 Archiving iOS app..."
-          xcodebuild \
-            -project "${APP_NAME}.xcodeproj" \
-            -scheme "${APP_NAME}" \
-            -configuration Release \
-            -sdk iphoneos \
-            -archivePath "build/${APP_NAME}.xcarchive" \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
-            clean archive
-
+          xcodebuild -project minecraft_swiftUI.xcodeproj \
+                     -scheme minecraft_swiftUI \
+                     -sdk iphoneos \
+                     -configuration Release \
+                     CODE_SIGNING_ALLOWED=NO \
+                     CODE_SIGNING_REQUIRED=NO \
+                     -archivePath build/minecraft_swiftUI.xcarchive \
+                     archive
       - name: Export IPA
         script: |
-          echo "📦 Exporting IPA..."
-          mkdir -p build/ipa
-          cat > ExportOptions.plist <<EOF
-          {
-            "method": "ad-hoc",
-            "compileBitcode": false,
-            "destination": "export",
-            "signingStyle": "manual",
-            "stripSwiftSymbols": true,
-            "thinning": "<none>"
-          }
-          EOF
           xcodebuild -exportArchive \
-            -archivePath "build/${APP_NAME}.xcarchive" \
-            -exportOptionsPlist ExportOptions.plist \
-            -exportPath "build/ipa" \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
-
-    artifacts:
-      - build/ipa/*.ipa
-      - build/**/*.xcarchive
+                     -archivePath build/minecraft_swiftUI.xcarchive \
+                     -exportPath build/ipa \
+                     -exportOptionsPlist ExportOptions.plist
+artifacts:
+  - build/ipa/app.ipa
