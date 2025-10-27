@@ -1,0 +1,12 @@
+name: minecraft_swiftUI
+options:
+  bundleIdPrefix: com.astro
+targets:
+  minecraft_swiftUI:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources: [Sources]
+    settings:
+      base:
+        SWIFT_VERSION: 5.9
