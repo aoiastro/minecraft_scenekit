@@ -1,6 +1,6 @@
 name: minecraft_swiftUI
 options:
-  bundleIdPrefix: com.astro
+  bundleIdPrefix: com.astro.minecraft-swiftUI
 targets:
   minecraft_swiftUI:
     type: application
