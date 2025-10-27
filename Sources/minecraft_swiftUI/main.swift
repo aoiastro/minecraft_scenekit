@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct MinecraftswiftUI: App {
+struct minecraft_swiftUIApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
