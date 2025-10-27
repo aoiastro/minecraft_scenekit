@@ -4,7 +4,6 @@ workflows:
     environment:
       xcode: latest
       cocoapods: default
-      flutter: none
     scripts:
       - name: Install XcodeGen
         script: brew install xcodegen
