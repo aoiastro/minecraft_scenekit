@@ -1,9 +1,9 @@
 import SwiftUI
 
-@main struct minecraft_swiftUI: App {
+@main struct MinecraftswiftUI: App {
 
     var body: some Scene {
-        WindowsGroup {
+        WindowGroup {
             ContentView()
         }
     }
